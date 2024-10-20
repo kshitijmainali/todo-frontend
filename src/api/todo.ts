@@ -24,6 +24,10 @@ export interface IAddFields {
   dateTime: string;
 }
 
+export interface IUpdateTodoFields extends Partial<IAddFields> {
+  _id: string;
+}
+
 const fetchAllTodo = (limit = 10, skip = 0) => {
   return () =>
     httpClient.get<ITodoBackendResponse<IPaginatedResponse<ITodoRes>>>(
@@ -34,6 +38,13 @@ const fetchAllTodo = (limit = 10, skip = 0) => {
 const addTodo = (props: IAddFields) => {
   return httpClient.post<ITodoBackendResponse<ITodoRes>>(
     `${SERVER_URL}/${todoApiPath.todo}`,
+    props,
+  );
+};
+
+const updateTodo = (props: IUpdateTodoFields) => {
+  return httpClient.patch<ITodoBackendResponse<ITodoRes>>(
+    `${SERVER_URL}/${todoApiPath.todo}/${props._id}`,
     props,
   );
 };
@@ -49,6 +60,16 @@ export const useAddTodo = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: addTodo,
+    onSuccess() {
+      queryClient.invalidateQueries(['todos']);
+    },
+  });
+};
+
+export const useUpdateTodo = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateTodo,
     onSuccess() {
       queryClient.invalidateQueries(['todos']);
     },

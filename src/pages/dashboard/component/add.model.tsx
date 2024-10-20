@@ -23,7 +23,7 @@ interface AddModelProps {
   onClose: () => void;
 }
 
-const addTodoSchema = yup.object().shape({
+export const addTodoSchema = yup.object().shape({
   name: yup.string().required('Name is required'),
   description: yup.string().required('Description is required'),
   dateTime: yup.string().required('Date is required'),
