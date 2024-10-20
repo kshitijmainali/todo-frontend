@@ -1,3 +1,3 @@
 export const todoApiPath = {
-  getAll: '/',
+  getAll: 'todo',
 };
