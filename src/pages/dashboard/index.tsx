@@ -5,9 +5,11 @@ import { DataTable } from '@src/components/Table';
 import { todoColumn } from './component/tableColumn';
 import React from 'react';
 import EditTodoModel from './component/edit.model';
+import DeleteTodoModel from './component/delete.model';
 
 export default function Dashboard() {
   const [editTodoId, seteditTodoId] = React.useState<string | null>(null);
+  const [deleteTodoId, setdeleteTodoId] = React.useState<string | null>(null);
 
   const { data } = useFetchAllTodo();
 
@@ -18,7 +20,7 @@ export default function Dashboard() {
   };
 
   const deleteTodo = (id: string) => {
-    console.log('change status', id);
+    setdeleteTodoId(id);
   };
 
   const todos = todoFromApi
@@ -65,6 +67,13 @@ export default function Dashboard() {
         <EditTodoModel
           isOpen={true}
           onClose={() => seteditTodoId(null)}
+          initialData={editProps}
+        />
+      ) : null}
+      {deleteTodoId ? (
+        <DeleteTodoModel
+          isOpen={true}
+          onClose={() => setdeleteTodoId(null)}
           initialData={editProps}
         />
       ) : null}
