@@ -14,20 +14,23 @@ const DateTimePicker = ({
 }: IDatePickerProps) => {
   return (
     <FormControl w={'full'}>
-      <DatePicker
-        selected={selectedDate}
-        onChange={date => setSelectedDate(date)}
-        showTimeSelect
-        dateFormat="MMMM d, yyyy h:mm aa"
-        placeholderText="Select Date and Time"
-        customInput={
-          <Input
-            placeholder="Select Date and Time"
-            width="100%"
-            _hover={{ cursor: 'pointer' }}
-          />
-        }
-      />
+      <Box display="flex" alignItems="center">
+        <DatePicker
+          selected={selectedDate}
+          onChange={date => setSelectedDate(date)}
+          showTimeSelect
+          dateFormat="MMMM d, yyyy h:mm aa"
+          placeholderText="Select Date and Time"
+          minDate={new Date()}
+          customInput={
+            <Input
+              placeholder="Select Date and Time"
+              width="100%"
+              _hover={{ cursor: 'pointer' }}
+            />
+          }
+        />
+      </Box>
     </FormControl>
   );
 };

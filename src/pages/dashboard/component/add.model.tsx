@@ -59,7 +59,7 @@ export default function AddTodoModel({ isOpen, onClose }: AddModelProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="sm" isCentered>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent position={'relative'} overflow="visible">
         <ModalHeader>
           <Flex direction={'row'} justifyContent="space-between">
             <Text fontSize={'1.5rem'} fontWeight={'bold'}>
