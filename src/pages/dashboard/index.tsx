@@ -23,8 +23,23 @@ export default function Dashboard() {
   const [isAddOpen, setisAddOpen] = React.useState(false);
   const [editTodoId, seteditTodoId] = React.useState<string | null>(null);
   const [deleteTodoId, setdeleteTodoId] = React.useState<string | null>(null);
+  const [limit, setLimit] = React.useState(10);
+  const [skip, setSkip] = React.useState(0);
 
-  const { data } = useFetchAllTodo();
+  const { data } = useFetchAllTodo(limit, skip);
+
+  const onPageSizeChange = (size: number) => {
+    setLimit(size);
+    setSkip(0);
+  };
+
+  const onPageChange = (page: number) => {
+    if (page) {
+      setSkip((page - 1) * limit);
+      return;
+    }
+    setSkip(0);
+  };
 
   const todoFromApi = data?.data?.data?.data;
 
@@ -39,6 +54,33 @@ export default function Dashboard() {
   const addTodo = () => {
     setisAddOpen(true);
   };
+
+  const closeAddModel = (isSucc = false) => {
+    setisAddOpen(false);
+    if (isSucc) {
+      setSkip(0);
+    }
+  };
+
+  const closeEditModel = (isSucc = false) => {
+    seteditTodoId(null);
+    if (isSucc) {
+      setSkip(0);
+    }
+  };
+
+  const closeDeleteModel = (isSucc = false) => {
+    setdeleteTodoId(null);
+    if (isSucc) {
+      setSkip(0);
+    }
+  };
+
+  const editProps = React.useMemo(() => {
+    if (editTodoId && todoFromApi) {
+      return todoFromApi?.find(todo => todo._id === editTodoId);
+    }
+  }, [editTodoId]);
 
   const todos = todoFromApi
     ? todoFromApi.map(el => {
@@ -61,12 +103,8 @@ export default function Dashboard() {
     hasNextPage: false,
   };
 
-  const editProps = React.useMemo(() => {
-    if (editTodoId && todoFromApi) {
-      return todoFromApi?.find(todo => todo._id === editTodoId);
-    }
-  }, [editTodoId]);
-
+  const totalPageCount = limit ? Math.ceil(pagination.total / limit) : 0;
+  const pageNumber = skip ? Math.ceil(skip / limit) + 1 : 1;
   return (
     <>
       <VStack w={'full'} m={4} p={4}>
@@ -87,18 +125,26 @@ export default function Dashboard() {
               description={`There are no winners yet`}
             />
           }
+          paginationProps={{
+            pageSizeChange: onPageSizeChange,
+            pageChange: onPageChange,
+            totalDataCount: pagination.total,
+            queryPageSize: limit,
+            totalPageCount,
+            queryPageIndex: pageNumber,
+          }}
         />
         {editTodoId ? (
           <EditTodoModel
             isOpen={true}
-            onClose={() => seteditTodoId(null)}
+            onClose={closeEditModel}
             initialData={editProps}
           />
         ) : null}
         {deleteTodoId ? (
           <DeleteTodoModel
             isOpen={true}
-            onClose={() => setdeleteTodoId(null)}
+            onClose={closeDeleteModel}
             id={deleteTodoId}
           />
         ) : null}

@@ -9,17 +9,17 @@ import {
   VStack,
   ModalFooter,
   Button,
-  Input,
   Divider,
   Text,
   IconButton,
 } from '@chakra-ui/react';
-import { ITodoRes, useDeleteTodo } from '@src/api/todo';
-import DateTimePicker from '@src/components/datePicker';
+import { useDeleteTodo } from '@src/api/todo';
+import { errorMsg } from '@src/constant/messages';
+import { useErrSccToast } from '@src/hooks/useErrSccToast';
 
 interface DeleteModelProps {
   isOpen: boolean;
-  onClose: () => void;
+  onClose: (isSucc?: boolean) => void;
   id: string;
 }
 
@@ -30,17 +30,22 @@ export default function DeleteTodoModel({
 }: DeleteModelProps) {
   const { mutateAsync, isLoading } = useDeleteTodo();
 
-  const onConfirm = () => {
+  const { errorToast } = useErrSccToast();
+
+  const onConfirm = async () => {
     try {
-      mutateAsync(id || '');
-      onClose();
-    } catch (error) {
-      console.log('error', error);
+      await mutateAsync(id || '');
+      onClose(true);
+    } catch (error: any) {
+      errorToast(
+        errorMsg.errorIn('todo'),
+        error?.message || errorMsg.somethingWentWrong,
+      );
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="sm" isCentered>
+    <Modal isOpen={isOpen} onClose={() => onClose()} size="sm" isCentered>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
@@ -49,7 +54,7 @@ export default function DeleteTodoModel({
               Delete todo
             </Text>
             <IconButton
-              onClick={onClose}
+              onClick={() => onClose()}
               aria-label="Close"
               icon={<CloseIcon />}
             />
@@ -74,7 +79,7 @@ export default function DeleteTodoModel({
               fontWeight={'medium'}
               borderRadius={'10px'}
               fontSize={'0.8rem'}
-              onClick={onClose}
+              onClick={() => onClose()}
               disabled={isLoading}
             >
               Cancel

@@ -16,11 +16,13 @@ import {
 } from '@chakra-ui/react';
 import { IAddFields, ITodoRes, useAddTodo } from '@src/api/todo';
 import DateTimePicker from '@src/components/datePicker';
+import { errorMsg } from '@src/constant/messages';
+import { useErrSccToast } from '@src/hooks/useErrSccToast';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 interface AddModelProps {
   isOpen: boolean;
-  onClose: () => void;
+  onClose: (isSucc?: boolean) => void;
 }
 
 export const addTodoSchema = yup.object().shape({
@@ -32,6 +34,8 @@ export const addTodoSchema = yup.object().shape({
 export default function AddTodoModel({ isOpen, onClose }: AddModelProps) {
   const { mutateAsync, isLoading } = useAddTodo();
 
+  const { errorToast } = useErrSccToast();
+
   const formik = useFormik<IAddFields>({
     initialValues: {
       name: '',
@@ -39,12 +43,15 @@ export default function AddTodoModel({ isOpen, onClose }: AddModelProps) {
       dateTime: '',
     },
     validationSchema: addTodoSchema,
-    onSubmit: values => {
+    onSubmit: async values => {
       try {
-        mutateAsync(values);
+        await mutateAsync(values);
         onClose();
-      } catch (error) {
-        console.log('error', error);
+      } catch (error: any) {
+        errorToast(
+          errorMsg.errorIn('todo'),
+          error?.message || errorMsg.somethingWentWrong,
+        );
       }
     },
   });
@@ -59,7 +66,7 @@ export default function AddTodoModel({ isOpen, onClose }: AddModelProps) {
               Add Todo{' '}
             </Text>
             <IconButton
-              onClick={onClose}
+              onClick={() => onClose()}
               aria-label="Close"
               icon={<CloseIcon />}
             />

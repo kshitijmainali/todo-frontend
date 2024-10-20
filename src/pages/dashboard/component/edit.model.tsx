@@ -18,10 +18,12 @@ import { IAddFields, ITodoRes, useUpdateTodo } from '@src/api/todo';
 import DateTimePicker from '@src/components/datePicker';
 import { useFormik } from 'formik';
 import { addTodoSchema } from './add.model';
+import { useErrSccToast } from '@src/hooks/useErrSccToast';
+import { errorMsg } from '@src/constant/messages';
 
 interface EditModelProps {
   isOpen: boolean;
-  onClose: () => void;
+  onClose: (closeAfterScc?: boolean) => void;
   initialData?: ITodoRes;
 }
 
@@ -31,6 +33,7 @@ export default function EditTodoModel({
   initialData,
 }: EditModelProps) {
   const { mutateAsync, isLoading } = useUpdateTodo();
+  const { errorToast } = useErrSccToast();
 
   const formik = useFormik<IAddFields>({
     initialValues: {
@@ -39,12 +42,15 @@ export default function EditTodoModel({
       dateTime: initialData?.dateTime || '',
     },
     validationSchema: addTodoSchema,
-    onSubmit: values => {
+    onSubmit: async values => {
       try {
         mutateAsync({ ...values, _id: initialData?._id || '' });
-        onClose();
-      } catch (error) {
-        console.log('error', error);
+        onClose(true);
+      } catch (error: any) {
+        errorToast(
+          errorMsg.errorIn('todo'),
+          error?.message || errorMsg.somethingWentWrong,
+        );
       }
     },
   });
@@ -59,7 +65,7 @@ export default function EditTodoModel({
               Edit Todo{' '}
             </Text>
             <IconButton
-              onClick={onClose}
+              onClick={() => onClose()}
               aria-label="Close"
               icon={<CloseIcon />}
             />
@@ -137,6 +143,8 @@ export default function EditTodoModel({
             borderRadius={'10px'}
             fontSize={'1rem'}
             onClick={formik.submitForm}
+            isLoading={isLoading}
+            isDisabled={!formik.isValid || isLoading}
           >
             SAVE
           </Button>

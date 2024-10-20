@@ -28,7 +28,7 @@ export const Pagination = ({
       <HStack spacing="60" w="full" justifyContent={'space-between'}>
         <HStack spacing={10} w="full">
           <Text fontSize="sm" fontWeight={'medium'}>
-            Showing {pageIndex} of {totalDataCount}
+            Showing {pageIndex} of {totalpageCount}
           </Text>
         </HStack>
         <HStack spacing={5} w="full" justifyContent={'flex-end'}>
