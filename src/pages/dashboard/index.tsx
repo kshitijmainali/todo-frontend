@@ -144,8 +144,8 @@ export default function Dashboard() {
           isClientSidePagination={false}
           emptyScreen={
             <EmptyScreen
-              title="No Winners"
-              description={`There are no winners yet`}
+              title="No Todo"
+              description={`There are no todo yet`}
             />
           }
           paginationProps={{
