@@ -77,7 +77,6 @@ export default function Dashboard() {
   };
 
   const onSelectFilter = (status: string) => {
-    // filter if already exist otherwise add
     if (filterStatus?.includes(status)) {
       setFilterStatus(filterStatus.filter(el => el !== status));
     } else {

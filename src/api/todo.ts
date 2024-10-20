@@ -26,6 +26,7 @@ export interface IAddFields {
 
 export interface IUpdateTodoFields extends Partial<IAddFields> {
   _id: string;
+  status?: string;
 }
 
 const fetchAllTodo = (limit = 10, skip = 0, status?: string[]) => {

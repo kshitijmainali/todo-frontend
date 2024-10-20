@@ -35,6 +35,18 @@ export default function EditTodoModel({
   const { mutateAsync, isLoading } = useUpdateTodo();
   const { errorToast } = useErrSccToast();
 
+  const onMarkAsDone = async () => {
+    try {
+      await mutateAsync({ _id: initialData?._id || '', status: 'done' });
+      onClose(true);
+    } catch (error: any) {
+      errorToast(
+        errorMsg.errorIn('todo'),
+        error?.message || errorMsg.somethingWentWrong,
+      );
+    }
+  };
+
   const formik = useFormik<IAddFields>({
     initialValues: {
       name: initialData?.name || '',
@@ -134,20 +146,40 @@ export default function EditTodoModel({
         </ModalBody>
         <Divider />
         <ModalFooter>
-          <Button
-            px={4}
-            py={6}
-            width={'full'}
-            bg="busYellow"
-            fontWeight={'medium'}
-            borderRadius={'10px'}
-            fontSize={'1rem'}
-            onClick={formik.submitForm}
-            isLoading={isLoading}
-            isDisabled={!formik.isValid || isLoading}
-          >
-            SAVE
-          </Button>
+          <Flex w={'full'} gap={1} justifyContent="space-between">
+            <Button
+              px={4}
+              py={6}
+              width={'full'}
+              bg="#B2C3DD"
+              fontWeight={'medium'}
+              borderRadius={'10px'}
+              fontSize={'1rem'}
+              onClick={onMarkAsDone}
+              isLoading={isLoading}
+              isDisabled={
+                !formik.isValid || isLoading || initialData?.status === 'done'
+              }
+            >
+              Mark as done
+            </Button>
+            <Button
+              px={4}
+              py={6}
+              width={'full'}
+              bg="busYellow"
+              fontWeight={'medium'}
+              borderRadius={'10px'}
+              fontSize={'1rem'}
+              onClick={formik.submitForm}
+              isLoading={isLoading}
+              isDisabled={
+                !formik.isValid || isLoading || initialData?.status === 'done'
+              }
+            >
+              SAVE
+            </Button>
+          </Flex>
         </ModalFooter>
       </ModalContent>
     </Modal>
