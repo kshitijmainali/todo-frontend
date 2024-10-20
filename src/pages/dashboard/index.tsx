@@ -1,6 +1,7 @@
 import {
   Box,
   Divider,
+  Flex,
   HStack,
   Input,
   InputGroup,
@@ -15,18 +16,20 @@ import { todoColumn } from './component/tableColumn';
 import React from 'react';
 import EditTodoModel from './component/edit.model';
 import DeleteTodoModel from './component/delete.model';
-import { SearchIcon } from '@chakra-ui/icons';
-import AddNewBtn from './component/button';
+import AddNewBtn, { FilterBtn } from './component/button';
 import AddTodoModel from './component/add.model';
+import FilterTodoByStatuModel from './component/filterStatus.model';
 
 export default function Dashboard() {
   const [isAddOpen, setisAddOpen] = React.useState(false);
+  const [isFilterTodoOpen, setisFilterTodoOpen] = React.useState(false);
   const [editTodoId, seteditTodoId] = React.useState<string | null>(null);
   const [deleteTodoId, setdeleteTodoId] = React.useState<string | null>(null);
   const [limit, setLimit] = React.useState(10);
+  const [filterStatus, setFilterStatus] = React.useState<string[]>([]);
   const [skip, setSkip] = React.useState(0);
 
-  const { data } = useFetchAllTodo(limit, skip);
+  const { data } = useFetchAllTodo(limit, skip, filterStatus);
 
   const onPageSizeChange = (size: number) => {
     setLimit(size);
@@ -43,18 +46,9 @@ export default function Dashboard() {
 
   const todoFromApi = data?.data?.data?.data;
 
-  const updateTodo = (id: string) => {
-    seteditTodoId(id);
-  };
-
-  const deleteTodo = (id: string) => {
-    setdeleteTodoId(id);
-  };
-
-  const addTodo = () => {
+  const openAddTodo = () => {
     setisAddOpen(true);
   };
-
   const closeAddModel = (isSucc = false) => {
     setisAddOpen(false);
     if (isSucc) {
@@ -62,6 +56,9 @@ export default function Dashboard() {
     }
   };
 
+  const openEditTodo = (id: string) => {
+    seteditTodoId(id);
+  };
   const closeEditModel = (isSucc = false) => {
     seteditTodoId(null);
     if (isSucc) {
@@ -69,10 +66,22 @@ export default function Dashboard() {
     }
   };
 
+  const openDeleteTodo = (id: string) => {
+    setdeleteTodoId(id);
+  };
   const closeDeleteModel = (isSucc = false) => {
     setdeleteTodoId(null);
     if (isSucc) {
       setSkip(0);
+    }
+  };
+
+  const onSelectFilter = (status: string) => {
+    // filter if already exist otherwise add
+    if (filterStatus?.includes(status)) {
+      setFilterStatus(filterStatus.filter(el => el !== status));
+    } else {
+      setFilterStatus([...(filterStatus || []), status]);
     }
   };
 
@@ -91,8 +100,8 @@ export default function Dashboard() {
           dateTime: el.dateTime,
           status: el.status,
           action: {
-            updateTodo,
-            deleteTodo,
+            updateTodo: openEditTodo,
+            deleteTodo: openDeleteTodo,
           },
         };
       })
@@ -112,7 +121,21 @@ export default function Dashboard() {
           <Text fontSize={'1.5rem'} fontWeight={500}>
             Todo list
           </Text>
-          <AddNewBtn onClick={addTodo} />
+          <Flex gap={1}>
+            <FilterBtn
+              isSelected={!!filterStatus?.includes('upcoming')}
+              onClick={onSelectFilter}
+              title="upcoming"
+              value="upcoming"
+            />
+            <FilterBtn
+              isSelected={!!filterStatus?.includes('done')}
+              onClick={onSelectFilter}
+              title="Done"
+              value="done"
+            />
+          </Flex>
+          <AddNewBtn onClick={openAddTodo} title="Add todo" />
         </HStack>
         <Divider borderColor="borderColorBlackOpacity" />
         <DataTable
@@ -148,9 +171,7 @@ export default function Dashboard() {
             id={deleteTodoId}
           />
         ) : null}
-        {isAddOpen ? (
-          <AddTodoModel isOpen onClose={() => setisAddOpen(false)} />
-        ) : null}
+        {isAddOpen ? <AddTodoModel isOpen onClose={closeAddModel} /> : null}
       </VStack>
     </>
   );

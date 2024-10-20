@@ -3,9 +3,37 @@ import React from 'react';
 
 interface IAddTodoBtnProps {
   onClick: () => void;
+  title: string;
 }
 
-export default function AddNewBtn({ onClick }: IAddTodoBtnProps) {
+interface IFilterBtnProps {
+  onClick: (status: string) => void;
+  title: string;
+  value: string;
+  isSelected: boolean;
+}
+export function FilterBtn({
+  isSelected,
+  onClick,
+  title,
+  value,
+}: IFilterBtnProps) {
+  return (
+    <Button
+      px={4}
+      py={6}
+      onClick={() => onClick(value)}
+      bg={isSelected ? '#B2C3DD' : '#fffce4'}
+      fontWeight={'light'}
+      borderRadius={'8px'}
+      fontSize={'0.8rem'}
+    >
+      {title}
+    </Button>
+  );
+}
+
+export default function ButtonWithStyle({ onClick }: IAddTodoBtnProps) {
   return (
     <Button
       px={4}

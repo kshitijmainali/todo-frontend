@@ -28,10 +28,12 @@ export interface IUpdateTodoFields extends Partial<IAddFields> {
   _id: string;
 }
 
-const fetchAllTodo = (limit = 10, skip = 0) => {
+const fetchAllTodo = (limit = 10, skip = 0, status?: string[]) => {
   return () =>
     httpClient.get<ITodoBackendResponse<IPaginatedResponse<ITodoRes>>>(
-      `${SERVER_URL}/${todoApiPath.todo}?limit=${limit}&skip=${skip}`,
+      `${SERVER_URL}/${todoApiPath.todo}?limit=${limit}&skip=${skip}${
+        status && status.length ? `&statusFilter=${status.join(',')}` : ''
+      }`,
     );
 };
 
@@ -56,10 +58,10 @@ const deleteTodo = (id: string) => {
   );
 };
 
-export const useFetchAllTodo = (limit = 10, skip = 0) => {
+export const useFetchAllTodo = (limit = 10, skip = 0, status?: string[]) => {
   return useQuery({
-    queryKey: ['todos', limit, skip],
-    queryFn: fetchAllTodo(limit, skip),
+    queryKey: ['todos', limit, skip, status],
+    queryFn: fetchAllTodo(limit, skip, status),
   });
 };
 
