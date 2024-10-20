@@ -7,9 +7,9 @@
     "dev": "vite --host 0.0.0.0",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "prepare": "husky install",
     "lint": "eslint ./src --no-ignore --fix",
-    "format": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\""
+    "format": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
+    "prepare": "husky"
   },
   "husky": {
     "hooks": {
@@ -19,7 +19,7 @@
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [
-      "eslint --quiet  --fix"
+      "eslint --no-ignore --quiet  --fix"
     ],
     "*.{json,js,ts,jsx,tsx,html}": [
       "prettier --write"
@@ -40,7 +40,6 @@
     "axios": "^1.5.0",
     "formik": "^2.4.4",
     "framer-motion": "^7.6.7",
-    "husky": "^8.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-jss": "^10.10.0",
@@ -66,6 +65,7 @@
     "eslint-plugin-jsx-a11y": "^6.6.1",
     "eslint-plugin-prettier": "5.0.0",
     "eslint-plugin-react": "^7.31.1",
+    "husky": "^9.1.6",
     "lint-staged": "^13.0.3",
     "prettier": "^3.0.3",
     "typescript": "^5.2.2",
