@@ -14,20 +14,31 @@ import {
   Text,
   IconButton,
 } from '@chakra-ui/react';
-import { ITodoRes } from '@src/api/todo';
+import { ITodoRes, useDeleteTodo } from '@src/api/todo';
 import DateTimePicker from '@src/components/datePicker';
 
 interface DeleteModelProps {
   isOpen: boolean;
   onClose: () => void;
-  initialData?: ITodoRes;
+  id: string;
 }
 
 export default function DeleteTodoModel({
   isOpen,
   onClose,
-  initialData,
+  id,
 }: DeleteModelProps) {
+  const { mutateAsync, isLoading } = useDeleteTodo();
+
+  const onConfirm = () => {
+    try {
+      mutateAsync(id || '');
+      onClose();
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="sm" isCentered>
       <ModalOverlay />
@@ -64,6 +75,7 @@ export default function DeleteTodoModel({
               borderRadius={'10px'}
               fontSize={'0.8rem'}
               onClick={onClose}
+              disabled={isLoading}
             >
               Cancel
             </Button>
@@ -75,7 +87,9 @@ export default function DeleteTodoModel({
               fontWeight={'medium'}
               borderRadius={'10px'}
               fontSize={'0.8rem'}
-              onClick={onClose}
+              onClick={onConfirm}
+              isLoading={isLoading}
+              disabled={isLoading}
             >
               Confirm
             </Button>

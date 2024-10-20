@@ -49,6 +49,13 @@ const updateTodo = (props: IUpdateTodoFields) => {
   );
 };
 
+const deleteTodo = (id: string) => {
+  console.log('first', id);
+  return httpClient.delete<ITodoBackendResponse<ITodoRes>>(
+    `${SERVER_URL}/${todoApiPath.todo}/${id}`,
+  );
+};
+
 export const useFetchAllTodo = (limit = 10, skip = 0) => {
   return useQuery({
     queryKey: ['todos', limit, skip],
@@ -70,6 +77,16 @@ export const useUpdateTodo = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateTodo,
+    onSuccess() {
+      queryClient.invalidateQueries(['todos']);
+    },
+  });
+};
+
+export const useDeleteTodo = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: deleteTodo,
     onSuccess() {
       queryClient.invalidateQueries(['todos']);
     },

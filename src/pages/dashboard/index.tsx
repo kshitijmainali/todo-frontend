@@ -99,7 +99,7 @@ export default function Dashboard() {
           <DeleteTodoModel
             isOpen={true}
             onClose={() => setdeleteTodoId(null)}
-            initialData={editProps}
+            id={deleteTodoId}
           />
         ) : null}
         {isAddOpen ? (
