@@ -1,7 +1,7 @@
 import { SERVER_URL } from '@src/configs/constant';
 import { todoApiPath } from './path';
 import { httpClient } from '@src/configs/axios';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   IPaginatedResponse,
   ITodoBackendResponse,
@@ -18,16 +18,39 @@ export interface ITodoRes {
   status?: string;
 }
 
+export interface IAddFields {
+  name: string;
+  description: string;
+  dateTime: string;
+}
+
 const fetchAllTodo = (limit = 10, skip = 0) => {
   return () =>
     httpClient.get<ITodoBackendResponse<IPaginatedResponse<ITodoRes>>>(
-      `${SERVER_URL}/${todoApiPath.getAll}?limit=${limit}&skip=${skip}`,
+      `${SERVER_URL}/${todoApiPath.todo}?limit=${limit}&skip=${skip}`,
     );
+};
+
+const addTodo = (props: IAddFields) => {
+  return httpClient.post<ITodoBackendResponse<ITodoRes>>(
+    `${SERVER_URL}/${todoApiPath.todo}`,
+    props,
+  );
 };
 
 export const useFetchAllTodo = (limit = 10, skip = 0) => {
   return useQuery({
     queryKey: ['todos', limit, skip],
     queryFn: fetchAllTodo(limit, skip),
+  });
+};
+
+export const useAddTodo = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: addTodo,
+    onSuccess() {
+      queryClient.invalidateQueries(['todos']);
+    },
   });
 };

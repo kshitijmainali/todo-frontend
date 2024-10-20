@@ -5,7 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 interface IDatePickerProps {
   selectedDate: Date | null;
-  setSelectedDate: React.Dispatch<React.SetStateAction<Date | null>>;
+  setSelectedDate: (selectedDate: Date | null) => void;
 }
 
 const DateTimePicker = ({
@@ -13,12 +13,13 @@ const DateTimePicker = ({
   setSelectedDate,
 }: IDatePickerProps) => {
   return (
-    <FormControl>
+    <FormControl w={'full'}>
       <DatePicker
         selected={selectedDate}
         onChange={date => setSelectedDate(date)}
         showTimeSelect
         dateFormat="MMMM d, yyyy h:mm aa"
+        placeholderText="Select Date and Time"
         customInput={
           <Input
             placeholder="Select Date and Time"

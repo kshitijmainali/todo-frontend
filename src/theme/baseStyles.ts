@@ -10,6 +10,7 @@ export const baseStyles = {
     milk: '#fffef7',
     gray: '#bcbcbc',
     busYellow: '#ffd803',
+    error: 'rgba(255, 58, 58, 0.75)',
     red: '#ff0303',
     borderColorBlackOpacity: 'rgba(15, 15, 15, 0.2)',
   },

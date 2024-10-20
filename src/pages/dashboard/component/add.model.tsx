@@ -14,20 +14,41 @@ import {
   Text,
   IconButton,
 } from '@chakra-ui/react';
-import { ITodoRes } from '@src/api/todo';
+import { IAddFields, ITodoRes, useAddTodo } from '@src/api/todo';
 import DateTimePicker from '@src/components/datePicker';
-
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 interface AddModelProps {
   isOpen: boolean;
   onClose: () => void;
-  initialData?: ITodoRes;
 }
 
-export default function AddTodoModel({
-  isOpen,
-  onClose,
-  initialData,
-}: AddModelProps) {
+const addTodoSchema = yup.object().shape({
+  name: yup.string().required('Name is required'),
+  description: yup.string().required('Description is required'),
+  dateTime: yup.string().required('Date is required'),
+});
+
+export default function AddTodoModel({ isOpen, onClose }: AddModelProps) {
+  const { mutateAsync, isLoading } = useAddTodo();
+
+  const formik = useFormik<IAddFields>({
+    initialValues: {
+      name: '',
+      description: '',
+      dateTime: '',
+    },
+    validationSchema: addTodoSchema,
+    onSubmit: values => {
+      try {
+        mutateAsync(values);
+        onClose();
+      } catch (error) {
+        console.log('error', error);
+      }
+    },
+  });
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="sm" isCentered>
       <ModalOverlay />
@@ -46,31 +67,78 @@ export default function AddTodoModel({
         </ModalHeader>
         <Divider />
         <ModalBody>
-          <VStack gap={4} justifyContent={'center'} alignItems="center">
-            <Input placeholder="Name" value={initialData?.name || ''} />
-            <Input
-              placeholder="Description"
-              value={initialData?.description || ''}
-            />
-            <DateTimePicker
-              selectedDate={
-                initialData?.dateTime ? new Date(initialData?.dateTime) : null
-              }
-              setSelectedDate={() => console.log('first')}
-            />
-          </VStack>
+          <form
+            style={{
+              width: '100%',
+            }}
+            onSubmit={formik.handleSubmit}
+          >
+            <VStack
+              gap={4}
+              w={'full'}
+              justifyContent={'center'}
+              textAlign={'left'}
+              alignItems={'flex-start'}
+            >
+              <VStack w={'full'} alignItems={'flex-start'}>
+                <Input
+                  placeholder="Name"
+                  name="name"
+                  value={formik.values.name || ''}
+                  onChange={formik.handleChange}
+                />
+                {formik.errors.name && formik.touched.name && (
+                  <Text color="error" fontSize="xs">
+                    {formik.errors.name}
+                  </Text>
+                )}
+              </VStack>
+              <VStack w={'full'} alignItems={'flex-start'}>
+                <Input
+                  placeholder="Description"
+                  name="description"
+                  value={formik.values.description || ''}
+                  onChange={formik.handleChange}
+                />{' '}
+                {formik.errors?.description && formik.touched?.description && (
+                  <Text color="error" fontSize="xs">
+                    {formik.errors.description}
+                  </Text>
+                )}
+              </VStack>
+              <VStack w={'full'} alignItems={'flex-start'}>
+                <DateTimePicker
+                  selectedDate={
+                    formik.values.dateTime
+                      ? new Date(formik.values.dateTime)
+                      : null
+                  }
+                  setSelectedDate={date =>
+                    formik.setFieldValue('dateTime', date)
+                  }
+                />
+                {formik.errors?.dateTime && formik.touched?.dateTime && (
+                  <Text color="error" fontSize="xs">
+                    {formik.errors.dateTime}
+                  </Text>
+                )}
+              </VStack>
+            </VStack>
+          </form>
         </ModalBody>
         <Divider />
         <ModalFooter>
           <Button
             px={4}
             py={6}
+            isLoading={isLoading}
+            isDisabled={!formik.isValid || isLoading}
             width={'full'}
             bg="busYellow"
             fontWeight={'medium'}
             borderRadius={'10px'}
             fontSize={'1rem'}
-            onClick={onClose}
+            onClick={formik.submitForm}
           >
             SAVE
           </Button>
