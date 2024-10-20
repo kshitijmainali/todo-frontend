@@ -11,6 +11,7 @@ export const baseStyles = {
     gray: '#bcbcbc',
     busYellow: '#ffd803',
     red: '#ff0303',
+    borderColorBlackOpacity: 'rgba(15, 15, 15, 0.2)',
   },
   fonts: {
     heading: `Poppins, sans-serif`,
