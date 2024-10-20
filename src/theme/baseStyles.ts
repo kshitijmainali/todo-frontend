@@ -9,6 +9,7 @@ export const baseStyles = {
     whiteSecondary: '#fffffe',
     milk: '#fffef7',
     gray: '#bcbcbc',
+    busYellow: '#ffd803',
     red: '#ff0303',
   },
   fonts: {

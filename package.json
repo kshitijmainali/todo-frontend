@@ -42,6 +42,7 @@
     "framer-motion": "^7.6.7",
     "moment-timezone": "^0.5.46",
     "react": "^18.2.0",
+    "react-datepicker": "^7.5.0",
     "react-dom": "^18.2.0",
     "react-jss": "^10.10.0",
     "react-router": "^6.8.1",
